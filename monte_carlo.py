@@ -130,9 +130,20 @@ def plot_performance_hist(mc_df, br_perc):
     ax.legend(ncol=2, loc='lower right', frameon=True)
     ax.set(ylabel='Dollars leftover')
     ax.set_xticklabels([])
+    ax.
     ax.set_title('Percent of simulations bankrupt: %s' %
-                 (round(br_perc*100, 1)), fontsize=20)
+                 (round(br_perc*100, 1)), fontsize=40)
 
-    plt.show()
+    # plt.show()
+    plt.savefig('mc.png')
+
+# -----------------------------------------------------------------------------
+
+
+def mc_pipeline(start_amt, withdraw_amt, avg_yrs, perc_stocks, n_lifetimes):
+    '''start to finish of performing monte carlo and plotting performance'''
+    mc, br = monte_carlo(start_amt, withdraw_amt, avg_yrs,
+                         perc_stocks, n_lifetimes)
+    plot_performance_hist(mc, br)
 
 # -----------------------------------------------------------------------------

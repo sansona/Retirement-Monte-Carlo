@@ -1,49 +1,52 @@
-import sys
-from PyQt5.QtWidgets import (QApplication, QWidget,
-                             QLineEdit, QPushButton, QMessageBox)
-from PyQt5.QtGui import QIcon
+import tkinter as tk
+
+root = tk.Tk()
+
+bg = tk.Canvas(root, width=400, height=300)
+bg.pack()
+
+'''
+experimental section on setting up entry text
+wtdraw = tk.StringVar()
+wtdraw.set('withdrawal: ')
+wtDir = tk.Label(root, textvariable=wtdraw, height=4)
+wtDir.pack(side='left')
+
+directory = tk.StringVar(None)
+dirname = tk.Entry(root, textvariable=directory, width=50)
+dirname.pack(side="left")
+'''
+
+wtdraw_entry = tk.Entry(root)
+bg.create_window(200, 100, window=wtdraw_entry)
+wtd = wtdraw_entry.get()
+
+yrs_entry = tk.Entry(root)
+bg.create_window(200, 125, window=yrs_entry)
+#yrs = yrs_entry.get()
+
+growth_entry = tk.Entry(root)
+bg.create_window(200, 150, window=growth_entry)
+#growth = growth_entry.get()
 
 
-class App(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.title = 'Retirement planner'
-        self.left = 10
-        self.top = 10
-        self.width = 640
-        self.height = 480
-        self.textbox_x = 20
-        self.textbox_y = 240
-        self.initUI()
+def recommend_start_amt(inflation=0.035):
+    '''
+    modified function from calculations.py - testing tkinter integration
+    recommends starting amount given retirement portfolio/condition
+    '''
+    withdrawal = float(wtdraw_entry.get())
+    n_yrs = float(yrs_entry.get())
+    pgrowth = float(growth_entry.get())
 
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
-        self.textbox = QLineEdit(self)
-        self.textbox.move(20, 20)
-        self.textbox.resize(self.textbox_y, self.textbox_x)
-        self.textbox.setObjectName('Starting amount')
-
-        self.textbox = QLineEdit(self)
-        self.textbox.move(20, 60)
-        self.textbox.resize(self.textbox_y, self.textbox_x)
-
-        self.button = QPushButton('Run monte carlo', self)
-        self.button.move(20, 200)
-
-        self.button.clicked.connect(self.on_click)
-        self.show()
-
-    def on_click(self):
-        textbox_val = self.textbox.text()
-        QMessageBox.question(self, 'MonteCarloMessage',
-                             'You typed: %s' % textbox_val,
-                             QMessageBox.Ok, QMessageBox.Ok)
-        self.textbox.setText('')
+    start = withdrawal/((pgrowth-inflation) *
+                        (1 - pow((1+inflation)/(1+pgrowth), n_yrs)))
+    start_lbl = tk.Label(root, text=round(start, 2))
+    bg.create_window(200, 230, window=start_lbl)
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = App()
-    sys.exit(app.exec_())
+recommend_start_btn = tk.Button(
+    text='Recommend starting amount', command=recommend_start_amt, bg='pink')
+bg.create_window(200, 180, window=recommend_start_btn)
+
+root.mainloop()
