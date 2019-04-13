@@ -130,12 +130,11 @@ def plot_performance_hist(mc_df, br_perc):
     ax.legend(ncol=2, loc='lower right', frameon=True)
     ax.set(ylabel='Dollars leftover')
     ax.set_xticklabels([])
-    ax.
     ax.set_title('Percent of simulations bankrupt: %s' %
                  (round(br_perc*100, 1)), fontsize=40)
 
-    # plt.show()
-    plt.savefig('mc.png')
+    plt.show()
+    # plt.savefig('mc.png')
 
 # -----------------------------------------------------------------------------
 
