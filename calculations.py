@@ -22,8 +22,8 @@ def recommend_withdrawal(start_amt):
     historically, a safe withdrawal rate has had a floor of 3.5% starting amt
     regardless of duration of market performance - inflation included
     '''
-    safe_rate = floor(0.035*start_amt, 2)
-    risky_rate = floor(0.045*start_amt, 2)
+    safe_rate = round(0.035*start_amt, 2)
+    risky_rate = round(0.045*start_amt, 2)
     return (safe_rate, risky_rate)
 
 # -----------------------------------------------------------------------------

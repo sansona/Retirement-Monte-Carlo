@@ -1,19 +1,23 @@
+import sys
 import tkinter as tk
 
 from monte_carlo import mc_pipeline
+from calculations import (
+    recommend_start_amt, recommend_withdrawal, calculate_expected_yrs)
 
 # -------------GUI SETTINGS FOR SCALABILITY/CUSTOMIZABILITY--------------------
 WINDOW_SIZE = 500
-TEXT_LOC = WINDOW_SIZE - 125
+TEXT_LOC = WINDOW_SIZE - 50
 FIRST_ENTRY_Y = WINDOW_SIZE/5
 ENTRY_Y_DIST = WINDOW_SIZE/20
-BTN_Y_DIST = 50
+BTN_Y_DIST = 30
+ENTRY_BTN_Y_DIST = 40
 BG_COLOR = 'gray'
 
 # -----------------------------------------------------------------------------
 
 
-def recommend_start_amt(inflation=0.035):
+def tk_start_amt(inflation=0.035):
     '''
     modified function from calculations.py - testing tkinter integration
     recommends starting amount given retirement portfolio/condition
@@ -23,28 +27,49 @@ def recommend_start_amt(inflation=0.035):
         n_yrs = float(yrs_entry.get())
         pgrowth = float(growth_entry.get())
 
-        start = withdrawal/((pgrowth-inflation) *
-                            (1 - pow((1+inflation)/(1+pgrowth), n_yrs)))
+        start = recommend_start_amt(withdrawal, n_yrs, pgrowth)
         start_lbl = tk.Label(
             root, text='Recommended starting amount: %s' % round(start, 2))
         bg.create_window(
-            WINDOW_SIZE/2, 230, window=start_lbl)
+            WINDOW_SIZE/2, TEXT_LOC, window=start_lbl)
 
     except ValueError:
-        start_lbl = tk.Label(root, text='Missing variable')
-        bg.create_window(WINDOW_SIZE/2, TEXT_LOC, window=start_lbl)
+        error_lbl = tk.Label(root, text='Missing variable')
+        bg.create_window(WINDOW_SIZE/2, TEXT_LOC, window=error_lbl)
 
 # -----------------------------------------------------------------------------
 
 
-def recommend_withdrawal():
-    pass
+def tk_recommend_withdrawal():
+    try:
+        starting = float(start_entry.get())
+        wtdraw = recommend_withdrawal(starting)
+        wtdraw_lbl = tk.Label(root, text='Recommended annual range: %s - %s'
+                              % (wtdraw[0], wtdraw[1]))
+        bg.create_window(
+            WINDOW_SIZE/2, TEXT_LOC, window=wtdraw_lbl)
+
+    except ValueError:
+        error_lbl = tk.Label(root, text='Missing variable')
+        bg.create_window(WINDOW_SIZE/2, TEXT_LOC, window=error_lbl)
 
 # -----------------------------------------------------------------------------
 
 
-def calculations_expected_yrs():
-    pass
+def tk_calculate_expected_yrs():
+    try:
+        withdrawal = float(wtdraw_entry.get())
+        starting = float(start_entry.get())
+        pgrowth = float(growth_entry.get())
+
+        ret_yrs = calculate_expected_yrs(withdrawal, starting, pgrowth)
+        ret_yrs_lbl = tk.Label(root, text='Recommended years in retirement: %s'
+                               % round(ret_yrs, 2))
+        bg.create_window(
+            WINDOW_SIZE/2, TEXT_LOC, window=ret_yrs_lbl)
+    except ValueError:
+        error_lbl = tk.Label(root, text='Missing variable')
+        bg.create_window(WINDOW_SIZE/2, TEXT_LOC, window=error_lbl)
 
 # -----------------------------------------------------------------------------
 
@@ -105,14 +130,24 @@ if __name__ == '__main__':
                      ENTRY_Y_DIST*5, window=n_lifes_entry)
 
     recommend_start_btn = tk.Button(text='Recommend starting amount',
-                                    command=recommend_start_amt, bg='pink')
-    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y +
+                                    command=tk_start_amt, bg='pink')
+    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y + ENTRY_BTN_Y_DIST +
                      ENTRY_Y_DIST*5 + BTN_Y_DIST, window=recommend_start_btn)
+
+    recommend_wtd_btn = tk.Button(text='Recommend annual withdrawal',
+                                  command=tk_recommend_withdrawal, bg='pink')
+    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y + ENTRY_BTN_Y_DIST +
+                     ENTRY_Y_DIST*5 + BTN_Y_DIST*2, window=recommend_wtd_btn)
+
+    recommend_yrs_btn = tk.Button(text='Recommended years in retirement',
+                                  command=tk_calculate_expected_yrs, bg='pink')
+    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y + ENTRY_BTN_Y_DIST +
+                     ENTRY_Y_DIST*5 + BTN_Y_DIST*3, window=recommend_yrs_btn)
 
     plot_btn = tk.Button(text='Generate monte-carlo plot',
                          command=run_monte_carlo, bg='pink')
-    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y +
-                     ENTRY_Y_DIST*5 + BTN_Y_DIST*2, window=plot_btn)
+    bg.create_window(WINDOW_SIZE/2, FIRST_ENTRY_Y + ENTRY_BTN_Y_DIST +
+                     ENTRY_Y_DIST*5 + BTN_Y_DIST*4, window=plot_btn)
     root.mainloop()
 
 # -----------------------------------------------------------------------------
